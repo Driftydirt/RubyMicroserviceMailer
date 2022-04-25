@@ -1,12 +1,13 @@
 class MailerController < ApplicationController
 
     def reminder
-        address = params["email"]
         event = Reminder.new(params["event"].permit(:title, :description))
-        puts address
-        puts "test"
-        puts event
-        ReminderMailer.reminder(address, event).deliver
+        emails = params["emails"]
+
+        emails.each do |e|
+            ReminderMailer.reminder(e,event).deliver
+        end
+
     end
     
 end
