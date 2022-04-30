@@ -1,30 +1,39 @@
 version: "3.7"
 
 services:
-    db_auth:
-        image: mysql:5.7
-        # volumes: 
-        #     - db_data:/var/lib/mysql
+    redis:
+        image: redis:6.2-alpine
         restart: always
-        environment:
-            MYSQL_DATABASE: auth
-            MYSQL_USER: admin
-            MYSQL_PASSWORD: admin
-            MYSQL_ROOT_PASSWORD: group24
-            MYSQL_TCP_PORT:  3307:3306
-
         ports:
-            - 3307:3306
-
-    
+        - '6379:6379'
+        command: redis-server --save 20 1 --loglevel warning
+        volumes: 
+        - redis:/data
+        
     rails:
         build: .
         image: web-cw-group-24-mailer
         ports:
-            - 3000:3000
+            - 3002:3000
+        environment: 
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
         volumes:
             - .:/app
         depends_on:
-            - db_auth
+            - redis
         links:
-            - db_auth
+            - redis
+        
+    sidekiq:
+        depends_on:
+        - 'redis'
+        build: .
+        command: sidekiq -C config/sidekiq.yml
+        volumes:
+        - '.:/app'
+
+
+volumes:
+    redis: 
+        driver: local
