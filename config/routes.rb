@@ -5,4 +5,6 @@ Rails.application.routes.draw do
   # root "articles#index"
 
   post "reminder", to: 'mailer#reminder'
+  post "reset_password", to: 'mailer#reset_password'
+  
 end
