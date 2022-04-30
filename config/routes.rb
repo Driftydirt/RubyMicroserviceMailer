@@ -6,5 +6,6 @@ Rails.application.routes.draw do
 
   post "reminder", to: 'mailer#reminder'
   post "reset_password", to: 'mailer#reset_password'
-  
+  post "invite", to: 'mailer#invite'
+
 end
